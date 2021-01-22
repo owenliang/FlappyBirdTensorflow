@@ -21,7 +21,7 @@ pygame.display.set_caption('Flappy Bird')   # 标题
 # 加载素材
 IMAGES, SOUNDS, HITMASKS = flappy_bird_utils.load()
 
-PIPEGAPSIZE = 100 # gap between upper and lower part of pipe
+PIPEGAPSIZE = 100 # 上下水管之间的距离是固定的100像素
 BASEY = SCREENHEIGHT * 0.79 # 地面图片的y坐标
 
 # 小鸟图片的宽*高
@@ -146,12 +146,11 @@ class GameState:
 
         # 检查小鸟是否碰到水管
         isCrash= checkCrash({'x': self.playerx, 'y': self.playery, 'index': self.playerIndex}, self.upperPipes, self.lowerPipes)
-        if isCrash:
-            #SOUNDS['hit'].play()
-            #SOUNDS['die'].play()
-            terminal = True
-            self.__init__()
-            reward = -1
+        if isCrash:  # 死掉了
+            SOUNDS['hit'].play()
+            SOUNDS['die'].play()
+            reward = -1 # 负向激励分
+            terminal = True # 本次操作导致游戏结束了
 
         ##### 进入重绘 #######
 
@@ -167,11 +166,13 @@ class GameState:
         showScore(self.score)
         # 画小鸟
         SCREEN.blit(IMAGES['player'][self.playerIndex], (self.playerx, self.playery))
-        # 绘制
+        # 重绘
         pygame.display.update()
-
-        # 取游戏画面
+        # 留存游戏画面
         image_data = pygame.surfarray.array3d(pygame.display.get_surface())
+        # 死亡则重置游戏状态
+        if terminal:
+            self.__init__()
         # 控制FPS
         FPSCLOCK.tick(FPS)
         return image_data, reward, terminal
