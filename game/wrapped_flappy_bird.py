@@ -107,7 +107,7 @@ class GameState:
         # 点击了屏幕
         if input_actions[1] == 1:
             self.playerVelY = self.playerFlapAcc # 将小鸟y方向速度重置为-9，也就是向上移动
-            SOUNDS['wing'].play()   # 播放扇翅膀的声音
+            #SOUNDS['wing'].play()   # 播放扇翅膀的声音
         elif self.playerVelY < self.playerMaxVelY:  # 没点击屏幕并且没达到最大掉落速度，继续施加重力加速度
             self.playerVelY += self.playerAccY
 
@@ -129,7 +129,7 @@ class GameState:
             pipeMidPos = pipe['x'] + PIPE_WIDTH / 2 # 水管中心的x坐标
             if pipeMidPos <= playerMidPos < pipeMidPos + abs(self.pipeVelX): # 小鸟x坐标刚刚飞过了水管x中心（4是水管的移动速度）
                 self.score += 1 # 游戏得分+1
-                SOUNDS['point'].play()
+                #SOUNDS['point'].play()
                 reward = 1  # 产生强化学习的动作奖励1分
 
         # 最左侧水管马上离开屏幕，生成新水管
@@ -146,8 +146,8 @@ class GameState:
         # 检查小鸟是否碰到水管
         isCrash= checkCrash({'x': self.playerx, 'y': self.playery, 'index': self.playerIndex}, self.upperPipes, self.lowerPipes)
         if isCrash:  # 死掉了
-            SOUNDS['hit'].play()
-            SOUNDS['die'].play()
+            #SOUNDS['hit'].play()
+            #SOUNDS['die'].play()
             reward = -1 # 负向激励分
             terminal = True # 本次操作导致游戏结束了
 
@@ -161,14 +161,15 @@ class GameState:
             SCREEN.blit(IMAGES['pipe'][1], (lPipe['x'], lPipe['y']))
         # 画地面
         SCREEN.blit(IMAGES['base'], (self.basex, BASEY))
-        # 画得分
-        showScore(self.score)
+        # 画得分（训练时候别打开，造成干扰了）
+        #showScore(self.score)
         # 画小鸟
         SCREEN.blit(IMAGES['player'][self.playerIndex], (self.playerx, self.playery))
         # 重绘
         pygame.display.update()
-        # 留存游戏画面
-        image_data = pygame.surfarray.array3d(pygame.display.get_surface())
+        # 留存游戏画面（截图是列优先存储的，需要转行行优先存储）
+        # https://stackoverflow.com/questions/34673424/how-to-get-numpy-array-of-rgb-colors-from-pygame-surface
+        image_data = pygame.surfarray.array3d(pygame.display.get_surface()).swapaxes(0,1)
         # 死亡则重置游戏状态
         if terminal:
             self.__init__()
