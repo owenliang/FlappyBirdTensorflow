@@ -78,7 +78,6 @@ class GameState:
 
         # 小鸟Y方向速度限制
         self.playerMaxVelY =  10   # Y向下最大速度10
-        self.playerMinVelY =  -8   # Y向上最大速度-8
 
     # 执行一次操作，返回操作后的画面、本次操作的奖励（活着+0.1，死了-1，飞过水管+1）、游戏是否结束
     def frame_step(self, input_actions):
