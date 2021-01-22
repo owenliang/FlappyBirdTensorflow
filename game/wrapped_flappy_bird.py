@@ -81,7 +81,7 @@ class GameState:
 
     # 执行一次操作，返回操作后的画面、本次操作的奖励（活着+0.1，死了-1，飞过水管+1）、游戏是否结束
     def frame_step(self, input_actions):
-        # 给pygame驱动一次执行
+        # 给pygame对积累的事件做一下默认处理
         pygame.event.pump()
 
         # 活着就奖励0.1分
