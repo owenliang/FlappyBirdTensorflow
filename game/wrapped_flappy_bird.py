@@ -85,7 +85,7 @@ class GameState:
         pygame.event.pump()
 
         # 活着就奖励0.1分
-        reward = 0.1
+        reward = 0
         # 是否死了
         terminal = False
 
@@ -130,7 +130,7 @@ class GameState:
             if pipeMidPos <= playerMidPos < pipeMidPos + abs(self.pipeVelX): # 小鸟x坐标刚刚飞过了水管x中心（4是水管的移动速度）
                 self.score += 1 # 游戏得分+1
                 #SOUNDS['point'].play()
-                reward = 1  # 产生强化学习的动作奖励1分
+                reward = 1  # 产生强化学习的动作奖励10分
 
         # 最左侧水管马上离开屏幕，生成新水管
         if 0 < self.upperPipes[0]['x'] < 5:
@@ -199,6 +199,8 @@ def checkCrash(player, upperPipes, lowerPipes):
 
     # 小鸟碰到了地面
     if player['y'] + player['h'] >= BASEY - 1:
+        return True
+    elif player['y'] <= 0: # 碰到天花板
         return True
     else: # 小鸟与水管进行碰撞检测
         # 小鸟图片的矩形区域
