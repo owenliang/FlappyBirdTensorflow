@@ -85,7 +85,7 @@ class GameState:
         pygame.event.pump()
 
         # 活着就奖励0.1分
-        reward = 0
+        reward = 0.1
         # 是否死了
         terminal = False
 
@@ -199,8 +199,6 @@ def checkCrash(player, upperPipes, lowerPipes):
 
     # 小鸟碰到了地面
     if player['y'] + player['h'] >= BASEY - 1:
-        return True
-    elif player['y'] <= 0: # 碰到天花板
         return True
     else: # 小鸟与水管进行碰撞检测
         # 小鸟图片的矩形区域
