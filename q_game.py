@@ -73,18 +73,17 @@ t = 0
 
 # 随机探索的概率控制
 INIT_EPSILON = 0.1
-EPSLION_DELTA = 1e-4
+EPSLION_DELTA = 1e-6
 # 留存样本个数
 TRANS_CAP = 50000
 # 至少有多少样本才训练
-TRANS_SIZE_FIT = 1000
+TRANS_SIZE_FIT = 10000
 # 训练集大小
 BATCH_SIZE = 32
 # 未来激励折扣
 GAMMA = 0.99
 
 epsilon = INIT_EPSILON
-
 rand_flap =0
 rand_noflap = 0
 model_flap=0
@@ -97,12 +96,14 @@ while True:
 
     action_type = '随机'
 
-    # TODO: 随着学习，降低随机探索的概率，让模型趋于稳定
+    # 随着学习，降低随机探索的概率，让模型趋于稳定
     if t <= TRANS_SIZE_FIT or random.random() <= epsilon:
-        action_index = random.randint(0,1)
-        if action_index==0:
+        n = random.random()
+        if n <= 0.95:
+            action_index = 0
             rand_noflap+=1
         else:
+            action_index = 1
             rand_flap+=1
         #print('[随机探索] t时刻进行随机动作探索...')
     else: # 模型预测2个操作的未来累计回报
