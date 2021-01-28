@@ -9,6 +9,12 @@ import skimage.transform
 import skimage.exposure
 import tensorflow as tf 
 import random 
+import argparse
+
+# 命令行参数
+parser = argparse.ArgumentParser()
+parser.add_argument("--model-only", help="加载已有模型，不随机探索，仍旧训练", action='store_true')
+args = parser.parse_args()
 
 # 测试用代码
 def _test_save_img(img):
@@ -37,6 +43,7 @@ def build_model():
     # 尝试加载之前保存的模型参数
     try:
         model.load_weights('./weights.h5')
+        print('加载模型成功...................')
     except:
         pass
     return model
@@ -81,7 +88,7 @@ t = 0
 INIT_EPSILON = 0.1
 EPSLION_DELTA = 1e-6
 # 最大留存样本个数
-TRANS_CAP = 50000
+TRANS_CAP =  20000
 # 至少有多少样本才训练
 TRANS_SIZE_FIT = 10000
 # 训练集大小
@@ -90,7 +97,10 @@ BATCH_SIZE = 32
 GAMMA = 0.99
 
 # 随机探索概率
-epsilon = INIT_EPSILON
+if args.model_only: # 不随机探索（极低概率）
+    epsilon = EPSLION_DELTA
+else:
+    epsilon = INIT_EPSILON
 
 # 打印一些进度信息
 rand_flap =0    # 随机点击次数
@@ -199,7 +209,7 @@ while True:
         ######################################################
     if t % 100 == 0:
         print('总帧数:{} 剩余探索概率:{}% 累计训练次数:{} 累计随机点:{} 累计随机不点:{} 累计模型点:{} 累计模型不点:{} 训练集:{} '.format(
-            t, round(epsilon * 100, 2), model_train_times, rand_flap, rand_noflap, model_flap, model_noflap,
+            t, round(epsilon * 100, 4), model_train_times, rand_flap, rand_noflap, model_flap, model_noflap,
             len(transitions)))
     t = t + 1
     #time.sleep(1)
