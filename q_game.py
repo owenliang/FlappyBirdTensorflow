@@ -33,6 +33,12 @@ def build_model():
         tf.keras.layers.Dense(2), # 对应2个action未来总回报预期
     ])
     model.compile(loss='mse', optimizer='adam')
+
+    # 尝试加载之前保存的模型参数
+    try:
+        model.load_weights('./weights.h5')
+    except:
+        pass
     return model
 
 # 创建游戏
@@ -74,7 +80,7 @@ t = 0
 # 随机探索的概率控制
 INIT_EPSILON = 0.1
 EPSLION_DELTA = 1e-6
-# 留存样本个数
+# 最大留存样本个数
 TRANS_CAP = 50000
 # 至少有多少样本才训练
 TRANS_SIZE_FIT = 10000
@@ -83,11 +89,15 @@ BATCH_SIZE = 32
 # 未来激励折扣
 GAMMA = 0.99
 
+# 随机探索概率
 epsilon = INIT_EPSILON
-rand_flap =0
-rand_noflap = 0
-model_flap=0
-model_noflap=0
+
+# 打印一些进度信息
+rand_flap =0    # 随机点击次数
+rand_noflap = 0 # 随机不点击次数
+model_flap=0    # 模型点击次数
+model_noflap=0  # 模型不点击次数
+model_train_times = 0   # 模型训练次数
 
 # 游戏启动
 while True:    
@@ -177,13 +187,19 @@ while True:
         #print(inputs_t)
         #print(Q_t)
         model.fit(inputs_t, Q_t, batch_size=len(minibatch))
+        model_train_times += 1
+        # 训练1次则降低些许的随机探索概率
         if epsilon > EPSLION_DELTA:
             epsilon -= EPSLION_DELTA
+        
+        # 每5000次batch保存一次模型权重（不适用saved_model，后续加载只会加载权重，模型结构还是程序构造，因为这样可以保持keras model的api)
+        if model_train_times % 5000 == 0:
+            model.save_weights('./weights.h5')
 
         ######################################################
     if t % 100 == 0:
-        print('时刻:{} 类型:{} 动作:{} 激励:{} epsilon:{} 随机点:{} 随机不点:{} 模型点:{} 模型不点:{} 训练集:{} '.format(
-            t, action_type, action_index, reward, epsilon, rand_flap, rand_noflap, model_flap, model_noflap,
+        print('总帧数:{} 剩余探索概率:{}% 累计训练次数:{} 累计随机点:{} 累计随机不点:{} 累计模型点:{} 累计模型不点:{} 训练集:{} '.format(
+            t, round(epsilon * 100, 2), model_train_times, rand_flap, rand_noflap, model_flap, model_noflap,
             len(transitions)))
     t = t + 1
     #time.sleep(1)
