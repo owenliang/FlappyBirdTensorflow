@@ -117,7 +117,7 @@ while True:
     action_type = '随机'
 
     # 随着学习，降低随机探索的概率，让模型趋于稳定
-    if t <= TRANS_SIZE_FIT or random.random() <= epsilon:
+    if (t <= TRANS_SIZE_FIT and not args.model_only) or random.random() <= epsilon:
         n = random.random()
         if n <= 0.95:
             action_index = 0
