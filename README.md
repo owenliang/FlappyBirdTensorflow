@@ -4,19 +4,28 @@
 
 ## 项目运行
 
-准备python3环境
+基于python3.8+tensorflow2.4+pygame实现，最好利用conda初始化一个新的python环境。
+
+安装依赖（最好-i指定走阿里云pip镜像）：
 
 ```
 pip install -r requirements.txt
-python q_learn.py
 ```
 
-训练时间较长，请不要在电脑前等待。
+## 体验效果
 
-模型会定期保存到磁盘，如果希望重新训练请删除weights.h5。
-
-如果希望直接使用已有模型，跳过随机探索，那么这样启动：
+weights.h5是我训练好的模型，可以直接体验效果：
 
 ```
-python q_learn.py --model-only
+python q_game.py --model-only
 ```
+
+## 自己训练
+
+删除weights.h5文件，启动训练：
+
+```
+python q_game.py
+```
+
+模型训练需要6小时+才能收敛稳定，最好睡觉前运行，睡醒后观察效果，模型会自动保存到weights.h5。
