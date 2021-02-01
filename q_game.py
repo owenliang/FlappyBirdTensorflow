@@ -86,6 +86,7 @@ t = 0
 
 # 随机探索的概率控制
 INIT_EPSILON = 0.1
+FINAL_EPSILON = 0.005
 EPSLION_DELTA = 1e-6
 # 最大留存样本个数
 TRANS_CAP =  20000
@@ -141,7 +142,7 @@ while True:
 
     # 执行当前动作，返回操作后的图片、本次激励、游戏是否结束
     img_t1, reward, terminal = run_one_frame(action_t)
-    #_test_save_img(img_t1)
+    _test_save_img(img_t1)
     img_t1 = img_t1.reshape((80,80,1)) # 增加通道维度，因为我们要最近4帧作为4通道图片，用作卷积模型输入
     stat_t1 = np.append(stat_t[:,:,1:], img_t1, axis=2) # 80*80*4，淘汰当前的第0通道，添加最新t1时刻到第3通道
 
@@ -199,7 +200,7 @@ while True:
         model.fit(inputs_t, Q_t, batch_size=len(minibatch))
         model_train_times += 1
         # 训练1次则降低些许的随机探索概率
-        if epsilon > EPSLION_DELTA:
+        if epsilon > FINAL_EPSILON:
             epsilon -= EPSLION_DELTA
         
         # 每5000次batch保存一次模型权重（不适用saved_model，后续加载只会加载权重，模型结构还是程序构造，因为这样可以保持keras model的api)
