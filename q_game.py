@@ -99,7 +99,7 @@ GAMMA = 0.99
 
 # 随机探索概率
 if args.model_only: # 不随机探索（极低概率）
-    epsilon = EPSLION_DELTA
+    epsilon = FINAL_EPSILON
 else:
     epsilon = INIT_EPSILON
 
